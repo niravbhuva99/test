@@ -5,10 +5,12 @@ const toursControllers = require('../controllers/toursControllers');
 
 toursRouter
   .route('/')
-  .get(toursControllers.getAllTours)
-  .post(toursControllers.getChecked, toursControllers.createTours);
+  .post(toursControllers.createTour)
+  .get(toursControllers.getAllTours);
+
 toursRouter
   .route('/:id')
-  .get(toursControllers.getAllTourMidW, toursControllers.getTour);
-
+  .get(toursControllers.getTour)
+  .post(toursControllers.updateTour)
+  .delete(toursControllers.deleteDocument);
 module.exports = toursRouter;
