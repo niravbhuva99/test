@@ -14,7 +14,6 @@ class ApiFeatures {
       /\b(gte|gt|lt|lte)\b/g,
       (match) => `$${match}`
     );
-
     this.query = this.query.find(JSON.parse(q));
     return this;
   }
@@ -40,10 +39,8 @@ class ApiFeatures {
       const page = this.queryString.page * 1 || 1;
       const limit = this.queryString.limit * 1 || 100;
       const skip = (page - 1) * limit;
-
       this.query = query.skip(skip).limit(limit);
     }
-
     return this;
   }
 }
@@ -56,6 +53,7 @@ exports.alies = (req, res, next) => {
 exports.createTour = async (req, res) => {
   try {
     const newTour = await Tour.create(req.body);
+
     res.status(200).json({
       status: 'success',
       data: newTour,
@@ -114,7 +112,6 @@ exports.getAllTours = async (req, res) => {
     // }
 
     res.status(200).json({
-      result: tour.length,
       data: {
         tour,
       },
@@ -175,5 +172,51 @@ exports.deleteDocument = async (req, res) => {
       message: 'failed',
       error,
     });
+  }
+};
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      { $match: { ratingsAverage: { $gte: 4 } } },
+      {
+        $group: {
+          _id: '$difficulty',
+          numTours: { $sum: 1 },
+          averageRating: { $avg: '$ratingsAverage' },
+          price: { $min: '$price' },
+          avgPrice: { $avg: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      { $sort: { avgPrice: 1 } },
+    ]);
+
+    res.json({ data: stats });
+  } catch (error) {
+    console.log(error);
+    res.send(error);
+  }
+};
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      { $unwind: '$startDates' },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          tours: { $push: '$name' },
+        },
+      },
+      { $addFields: { month: '$_id' } },
+      { $project: { _id: 0 } },
+      { $sort: { month: 1 } },
+    ]);
+
+    res.json({ data: stats });
+  } catch (error) {
+    console.log(error);
+    res.send(error);
   }
 };

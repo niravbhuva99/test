@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
-
-const newSchema = new mongoose.Schema({
+var validator = require('validator');
+const tourSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'A tour must have a name'],
     unique: true,
     trim: true,
+    minLength: [10, 'min of 10 Character is required'],
+    maxLength: [50, 'name is too long'],
   },
 
   duration: {
@@ -32,8 +34,18 @@ const newSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'A tour must have a price'],
   },
+  secretTour: {
+    type: Boolean,
+    default: false,
+  },
   priceDiscount: {
     type: Number,
+    //
+    validate: {
+      validator: function (val) {
+        return val < this.price;
+      },
+    },
   },
   summary: {
     type: String,
@@ -55,6 +67,31 @@ const newSchema = new mongoose.Schema({
   },
   startDates: [Date],
 });
-const Tour = mongoose.model('tour', newSchema);
+
+//document middleware : run before save command and create command
+tourSchema.pre('save', function (next) {
+  console.log('from middleware', this);
+  next();
+});
+
+tourSchema.post('save', function (docs, next) {
+  console.log(docs);
+  next();
+});
+
+// query middleware
+
+tourSchema.pre('find', function (next) {
+  this.find({ price: { $lte: 400 } });
+  next();
+});
+
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  console.log(this.pipeline());
+  next();
+});
+
+const Tour = mongoose.model('tour', tourSchema);
 
 module.exports = Tour;
