@@ -79,14 +79,14 @@ exports.getAllTours = async (req, res) => {
     // );
 
     // let query = Tour.find(JSON.parse(q));
-    const features = new ApiFeatures(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .limitFields()
-      .pagination();
+    // const features = new ApiFeatures(Tour.find(), req.query)
+    //   .filter()
+    //   .sort()
+    //   .limitFields()
+    //   .pagination();
 
-    const tour = await features.query;
-
+    const tour = await Tour.find();
+    console.log(tour);
     // if (req.query.sort) {
     //     const sortBy = req.query.sort.split(',').join(' ');
     //   filter.query = filter.query.sort(sortBy);

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-var validator = require('validator');
+const User = require('./userModel');
 const tourSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -58,7 +58,7 @@ const tourSchema = new mongoose.Schema({
   },
   imageCover: {
     type: String,
-    required: [true, 'A tour must have a cover image'],
+    // required: [true, 'A tour must have a cover image'],
   },
   images: [String],
   createdAt: {
@@ -66,23 +66,49 @@ const tourSchema = new mongoose.Schema({
     default: Date.now(),
   },
   startDates: [Date],
+  startLocation: {
+    type: { type: String, default: 'Point', enum: ['Point'] },
+    coordinates: {
+      type: [Number],
+    },
+    address: String,
+    description: String,
+  },
+  locations: [
+    {
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+      day: Number,
+    },
+  ],
+  guides: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 //document middleware : run before save command and create command
-tourSchema.pre('save', function (next) {
-  console.log('from middleware', this);
-  next();
-});
+// when you use embedding
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
 
 tourSchema.post('save', function (docs, next) {
-  console.log(docs);
   next();
 });
 
 // query middleware
 
-tourSchema.pre('find', function (next) {
-  this.find({ price: { $lte: 400 } });
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__V',
+  });
   next();
 });
 
