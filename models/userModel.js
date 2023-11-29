@@ -46,8 +46,15 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  tours: { type: mongoose.Schema.Types.ObjectId, ref: 'Tour' },
 });
 
+// userSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: 'tours',
+//   });
+//   next();
+// });
 userSchema.pre('save', async function (next) {
   console.log('run middleware');
   if (!this.isModified('password') || this.$isNew) return;

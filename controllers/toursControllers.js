@@ -86,7 +86,7 @@ exports.getAllTours = async (req, res) => {
     //   .pagination();
 
     const tour = await Tour.find();
-    console.log(tour);
+
     // if (req.query.sort) {
     //     const sortBy = req.query.sort.split(',').join(' ');
     //   filter.query = filter.query.sort(sortBy);
@@ -129,7 +129,8 @@ exports.getAllTours = async (req, res) => {
 exports.getTour = async (req, res) => {
   try {
     const params = req.params.id;
-    const result = await Tour.findById(params);
+    const result = await Tour.findById(params).populate('reviews');
+    console.log(result.reviews);
     res.status(200).json({
       result,
     });

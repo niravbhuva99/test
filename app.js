@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv').config();
 const path = require('path');
-const data = require('./dev-data/data/tours.json');
+// const data = require('./dev-data/data/tours.json');
 const route = require('./routes/userRoute');
 const app = express();
 const Tour = require('./models/tourModel');
@@ -12,6 +12,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
 const toursRouter = require(`./routes/toursRoute`);
 const reviewRouter = require('./routes/reviewRoute');
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));

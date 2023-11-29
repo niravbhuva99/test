@@ -6,7 +6,7 @@ const crypto = require('crypto');
 
 exports.getAllUser = async (req, res) => {
   try {
-    const allUser = await User.find();
+    const allUser = await User.find().populate('tours');
 
     res.status(200).json({
       user: allUser,
