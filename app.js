@@ -2,7 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv').config();
 const path = require('path');
 // const data = require('./dev-data/data/tours.json');
-const route = require('./routes/userRoute');
+const userRoute = require('./routes/userRoute');
 const app = express();
 const Tour = require('./models/tourModel');
 const mongoose = require('mongoose');
@@ -39,7 +39,7 @@ app.use(xss());
 
 app.use('/api', limiter);
 app.use('/api/v1/tours', toursRouter);
-app.use('/api/v1', route);
+app.use('/api/v1/user', userRoute);
 app.use('/api/v1/reviews', reviewRouter);
 
 app.listen(process.env.PORT, () => console.log('server started...'));

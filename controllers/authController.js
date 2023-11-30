@@ -256,11 +256,7 @@ exports.updateMe = async (req, res, next) => {
 // delete => when user want to delete query then we don't delete data from the database, what we do is we set a active property to false and when you use find then we dot't show that document in list for that we can use query middleware
 
 exports.deleteUser = async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(
-    req.user.id,
-    { active: false },
-    { new: true }
-  );
+  await User.findByIdAndUpdate(req.user.id, { active: false }, { new: true });
 
   res.send('user is inactive');
   next();

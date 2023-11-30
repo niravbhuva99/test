@@ -9,6 +9,5 @@ route.post('/forgotPassword', authController.forgotPassword);
 route.patch('/resetPassword/:token', authController.resetPassword);
 route.patch('/update', authController.protect, authController.updatePassword);
 route.patch('/userUpdate', authController.protect, authController.updateMe);
-route.delete('/delete', authController.protect, authController.deleteUser);
-
+route.delete('/delete/:id', authController.protect, authController.deleteUser);
 module.exports = route;
